@@ -133,6 +133,13 @@
             max-width: 540px;
             margin: 0 auto 30px auto;
         }
+        /* Description under photo input */
+        .photo-desc {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: -8px;
+            margin-bottom: 10px;
+        }
         @media (max-width: 700px) {
             .id-card { padding: 17px 4vw 19px 4vw; }
             .id-row { flex-direction: column; gap: 14px; }
@@ -180,13 +187,16 @@
         </select>
 
         <label>Phone</label>
-        <input type="text" id="phone" placeholder="Phone">
+        <input type="text" id="phone" placeholder="10-digit phone number" maxlength="10" pattern="\d{10}" title="Enter exactly 10 digits">
 
         <label>Address</label>
         <textarea id="address" rows="2" placeholder="Address"></textarea>
 
         <label>Photo</label>
-        <input type="file" id="photo" accept="image/*" onchange="previewPhoto(event)">
+        <input type="file" id="photo" accept=".jpg" onchange="previewPhoto(event)">
+        <div class="photo-desc">
+            Image must be a .jpg file with dimensions 3.5 × 4.5 cm.
+        </div>
 
         <button type="button" onclick="previewCard()">Preview</button>
     </div>
@@ -221,29 +231,71 @@
             const section = document.getElementById('section').value;
             const phone = document.getElementById('phone').value;
             const address = document.getElementById('address').value;
+            const photoInput = document.getElementById('photo');
+            const file = photoInput.files[0];
 
-            // Update card fields, show default texts if empty
+            // Validate phone (10 digits)
+            const phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(phone)) {
+                alert("Phone number must be exactly 10 digits.");
+                return;
+            }
+
+            // Validate photo file type and presence
+            if (!file) {
+                alert("Please upload a photo.");
+                return;
+            }
+            if (!file.name.toLowerCase().endsWith('.jpg')) {
+                alert("Photo must be a .jpg file.");
+                return;
+            }
+
+            // Check image dimensions
+            const img = new Image();
+            img.onload = function() {
+                const width = img.width;
+                const height = img.height;
+
+                // Approximate 3.5cm x 4.5cm at 96 dpi = 132 x 170 pixels
+                const expectedWidth = 132;
+                const expectedHeight = 170;
+                const tolerance = 5;
+
+                if (Math.abs(width - expectedWidth) > tolerance || Math.abs(height - expectedHeight) > tolerance) {
+                    alert(`Image dimensions must be approximately 3.5 × 4.5 cm (${expectedWidth}px × ${expectedHeight}px). Your image is ${width}px × ${height}px.`);
+                    return;
+                }
+
+                // If validation passes, update preview and show card
+                updatePreviewCard(schoolName, studentName, section, phone, address);
+            };
+            img.onerror = function() {
+                alert("Error loading image file.");
+                return;
+            };
+            img.src = URL.createObjectURL(file);
+        }
+
+        function updatePreviewCard(schoolName, studentName, section, phone, address) {
             document.getElementById('cardSchoolName').textContent = schoolName || 'SCHOOL NAME';
             document.getElementById('cardStudentName').textContent = studentName || 'Student Name';
             document.getElementById('cardSection').textContent = section || 'Section';
             document.getElementById('cardPhone').textContent = phone || 'Phone';
             document.getElementById('cardAddress').textContent = address || 'Address';
 
-            // Show the ID card
             document.getElementById('idCard').style.display = 'block';
-
-            // Show the submit button
             document.getElementById('submitBtn').style.display = 'block';
         }
 
         function previewPhoto(event) {
             const file = event.target.files[0];
             const img = document.getElementById('cardPhoto');
-            if (file) {
+            if (file && file.name.toLowerCase().endsWith('.jpg')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     img.src = e.target.result;
-                }
+                };
                 reader.readAsDataURL(file);
             } else {
                 img.src = 'image.jpg';
