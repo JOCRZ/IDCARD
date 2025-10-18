@@ -32,7 +32,7 @@
             margin-bottom: 3px;
             font-size: 14px;
         }
-        .form-section input, .form-section select, .form-section textarea {
+        .form-section input, .form-section textarea, .form-section select {
             width: 100%;
             border: 1px solid #bbb;
             border-radius: 5px;
@@ -40,16 +40,31 @@
             margin-bottom: 11px;
             font-size: 16px;
         }
+        button {
+            background-color: #262c6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #1e234f;
+        }
         /* ID Card Styling */
         .id-card {
             background: #fff;
             border-radius: 22px;
             box-shadow: 0 4px 16px 2px rgba(100,100,110,0.07);
             max-width: 540px;
-            margin: 0 auto;
+            margin: 20px auto 10px auto;
             padding: 32px 32px 25px 32px;
             position: relative;
             font-family: 'Segoe UI', Arial, sans-serif;
+            display: none; /* Initially hidden */
         }
         .id-title-row {
             display: flex;
@@ -113,21 +128,30 @@
             margin-bottom: 2px;
             margin-left: 2px;
         }
+        #submitBtn {
+            display: none;
+            max-width: 540px;
+            margin: 0 auto 30px auto;
+        }
         @media (max-width: 700px) {
             .id-card { padding: 17px 4vw 19px 4vw; }
             .id-row { flex-direction: column; gap: 14px; }
             .id-photo { margin: 0 auto 8px auto; }
+            button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="form-section">
         <h2>Enter Student Details</h2>
+
         <label>Student Name</label>
-        <input type="text" id="studentName" placeholder="Name" oninput="updatePreview()">
+        <input type="text" id="studentName" placeholder="Name">
 
         <label>Section</label>
-        <select id="section" onchange="updatePreview()">
+        <select id="section">
             <option value="">Select Section</option>
             <option value="Section 1">Section 1</option>
             <option value="Section 2">Section 2</option>
@@ -136,7 +160,7 @@
         </select>
 
         <label>School Name</label>
-        <select id="schoolName" onchange="updatePreview()">
+        <select id="schoolName">
             <option value="">Select School</option>
             <option value="School 1">School 1</option>
             <option value="School 2">School 2</option>
@@ -156,16 +180,18 @@
         </select>
 
         <label>Phone</label>
-        <input type="text" id="phone" placeholder="Phone" oninput="updatePreview()">
+        <input type="text" id="phone" placeholder="Phone">
 
         <label>Address</label>
-        <textarea id="address" rows="2" placeholder="Address" oninput="updatePreview()"></textarea>
+        <textarea id="address" rows="2" placeholder="Address"></textarea>
 
         <label>Photo</label>
         <input type="file" id="photo" accept="image/*" onchange="previewPhoto(event)">
+
+        <button type="button" onclick="previewCard()">Preview</button>
     </div>
 
-    <div class="id-card">
+    <div class="id-card" id="idCard">
         <div class="id-title-row">
             <div class="school-name" id="cardSchoolName">SCHOOL NAME</div>
             <div class="id-gold-label">Student ID Card</div>
@@ -185,23 +211,29 @@
             </div>
         </div>
     </div>
-    
+
+    <button type="submit" id="submitBtn">Submit</button>
+
     <script>
-        function updatePreview() {
-            document.getElementById('cardStudentName').textContent =
-                document.getElementById('studentName').value || 'Student Name';
+        function previewCard() {
+            const schoolName = document.getElementById('schoolName').value;
+            const studentName = document.getElementById('studentName').value;
+            const section = document.getElementById('section').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
 
-            document.getElementById('cardSection').textContent =
-                document.getElementById('section').value || 'Section';
+            // Update card fields, show default texts if empty
+            document.getElementById('cardSchoolName').textContent = schoolName || 'SCHOOL NAME';
+            document.getElementById('cardStudentName').textContent = studentName || 'Student Name';
+            document.getElementById('cardSection').textContent = section || 'Section';
+            document.getElementById('cardPhone').textContent = phone || 'Phone';
+            document.getElementById('cardAddress').textContent = address || 'Address';
 
-            document.getElementById('cardSchoolName').textContent =
-                document.getElementById('schoolName').value || 'SCHOOL NAME';
+            // Show the ID card
+            document.getElementById('idCard').style.display = 'block';
 
-            document.getElementById('cardPhone').textContent =
-                document.getElementById('phone').value || 'Phone';
-
-            document.getElementById('cardAddress').textContent =
-                document.getElementById('address').value || 'Address';
+            // Show the submit button
+            document.getElementById('submitBtn').style.display = 'block';
         }
 
         function previewPhoto(event) {
@@ -217,7 +249,6 @@
                 img.src = 'image.jpg';
             }
         }
-        updatePreview();
     </script>
 </body>
 </html>
