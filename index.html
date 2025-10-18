@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Student ID Card Preview - Modern</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
         body {
             background: #f7f7fa;
@@ -155,7 +155,7 @@
         <h2>Enter Student Details</h2>
 
         <label>Student Name</label>
-        <input type="text" id="studentName" placeholder="Name">
+        <input type="text" id="studentName" placeholder="Name" />
 
         <label>Section</label>
         <select id="section">
@@ -187,16 +187,14 @@
         </select>
 
         <label>Phone</label>
-        <input type="text" id="phone" placeholder="10-digit phone number" maxlength="10" pattern="\d{10}" title="Enter exactly 10 digits">
+        <input type="text" id="phone" placeholder="10-digit phone number" maxlength="10" pattern="\d{10}" title="Enter exactly 10 digits" />
 
         <label>Address</label>
         <textarea id="address" rows="2" placeholder="Address"></textarea>
 
         <label>Photo</label>
-        <input type="file" id="photo" accept=".jpg" onchange="previewPhoto(event)">
-        <div class="photo-desc">
-            Image must be a .jpg file with dimensions 3.5 × 4.5 cm.
-        </div>
+        <input type="file" id="photo" onchange="previewPhoto(event)" />
+        <div class="photo-desc">Upload any image file (no restrictions on format or dimensions).</div>
 
         <button type="button" onclick="previewCard()">Preview</button>
     </div>
@@ -208,7 +206,7 @@
         </div>
         <div class="id-divider"></div>
         <div class="id-row">
-            <img src="image.jpg" id="cardPhoto" class="id-photo" alt="Student Photo">
+            <img src="image.jpg" id="cardPhoto" class="id-photo" alt="Student Photo" />
             <div class="id-fields">
                 <div class="id-field-label">Nama</div>
                 <div class="id-field-value" id="cardStudentName"></div>
@@ -222,85 +220,178 @@
         </div>
     </div>
 
-    <button type="submit" id="submitBtn">Submit</button>
+    <button type="button" id="submitBtn">Submit</button>
 
-    <script>
-        function previewCard() {
-            const schoolName = document.getElementById('schoolName').value;
-            const studentName = document.getElementById('studentName').value;
-            const section = document.getElementById('section').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
-            const photoInput = document.getElementById('photo');
-            const file = photoInput.files[0];
+<script>
+    function previewCard() {
+        const schoolName = document.getElementById('schoolName').value;
+        const studentName = document.getElementById('studentName').value;
+        const section = document.getElementById('section').value;
+        const phone = document.getElementById('phone').value;
+        const address = document.getElementById('address').value;
+        const photoInput = document.getElementById('photo');
+        const file = photoInput.files[0];
 
-            // Validate phone (10 digits)
-            const phoneRegex = /^\d{10}$/;
-            if (!phoneRegex.test(phone)) {
-                alert("Phone number must be exactly 10 digits.");
-                return;
-            }
-
-            // Validate photo file type and presence
-            if (!file) {
-                alert("Please upload a photo.");
-                return;
-            }
-            if (!file.name.toLowerCase().endsWith('.jpg')) {
-                alert("Photo must be a .jpg file.");
-                return;
-            }
-
-            // Check image dimensions
-            const img = new Image();
-            img.onload = function() {
-                const width = img.width;
-                const height = img.height;
-
-                // Approximate 3.5cm x 4.5cm at 96 dpi = 132 x 170 pixels
-                const expectedWidth = 132;
-                const expectedHeight = 170;
-                const tolerance = 5;
-
-                if (Math.abs(width - expectedWidth) > tolerance || Math.abs(height - expectedHeight) > tolerance) {
-                    alert(`Image dimensions must be approximately 3.5 × 4.5 cm (${expectedWidth}px × ${expectedHeight}px). Your image is ${width}px × ${height}px.`);
-                    return;
-                }
-
-                // If validation passes, update preview and show card
-                updatePreviewCard(schoolName, studentName, section, phone, address);
-            };
-            img.onerror = function() {
-                alert("Error loading image file.");
-                return;
-            };
-            img.src = URL.createObjectURL(file);
+        // Validate phone (10 digits)
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            alert('Phone number must be exactly 10 digits.');
+            return;
         }
 
-        function updatePreviewCard(schoolName, studentName, section, phone, address) {
-            document.getElementById('cardSchoolName').textContent = schoolName || 'SCHOOL NAME';
-            document.getElementById('cardStudentName').textContent = studentName || 'Student Name';
-            document.getElementById('cardSection').textContent = section || 'Section';
-            document.getElementById('cardPhone').textContent = phone || 'Phone';
-            document.getElementById('cardAddress').textContent = address || 'Address';
-
-            document.getElementById('idCard').style.display = 'block';
-            document.getElementById('submitBtn').style.display = 'block';
+        // Validate photo presence
+        if (!file) {
+            alert('Please upload a photo.');
+            return;
         }
 
-        function previewPhoto(event) {
-            const file = event.target.files[0];
-            const img = document.getElementById('cardPhoto');
-            if (file && file.name.toLowerCase().endsWith('.jpg')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    img.src = e.target.result;
+        // No restriction on file format or dimensions anymore
+        // Just preview the image
+        const img = new Image();
+        img.onload = function () {
+            updatePreviewCard(schoolName, studentName, section, phone, address);
+        };
+        img.onerror = function () {
+            alert('Error loading image file.');
+            return;
+        };
+        img.src = URL.createObjectURL(file);
+    }
+
+    function updatePreviewCard(schoolName, studentName, section, phone, address) {
+        document.getElementById('cardSchoolName').textContent = schoolName || 'SCHOOL NAME';
+        document.getElementById('cardStudentName').textContent = studentName || 'Student Name';
+        document.getElementById('cardSection').textContent = section || 'Section';
+        document.getElementById('cardPhone').textContent = phone || 'Phone';
+        document.getElementById('cardAddress').textContent = address || 'Address';
+
+        document.getElementById('idCard').style.display = 'block';
+        document.getElementById('submitBtn').style.display = 'block';
+    }
+
+    function previewPhoto(event) {
+        const file = event.target.files[0];
+        const img = document.getElementById('cardPhoto');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            img.src = 'image.jpg';
+        }
+    }
+
+    // Submission logic to send data to Google Sheets via Google Apps Script
+    const submitBtn = document.getElementById('submitBtn');
+
+    async function uploadFile(file) {
+        return new Promise((resolve, reject) => {
+            const fr = new FileReader();
+            fr.onload = (e) => {
+                const data = e.target.result.split(',');
+                const obj = {
+                    fileName: file.name,
+                    mimeType: data[0].match(/:(\w.+);/)[1],
+                    data: data[1],
                 };
-                reader.readAsDataURL(file);
-            } else {
-                img.src = 'image.jpg';
-            }
+                resolve(obj);
+            };
+            fr.onerror = reject;
+            fr.readAsDataURL(file);
+        });
+    }
+
+    submitBtn.addEventListener('click', async () => {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        const schoolName = document.getElementById('schoolName').value;
+        const studentName = document.getElementById('studentName').value;
+        const section = document.getElementById('section').value;
+        const phone = document.getElementById('phone').value;
+        const address = document.getElementById('address').value;
+        const photoInput = document.getElementById('photo');
+
+        // Basic validation
+        if (!studentName || !schoolName || !section || !phone || !address) {
+            alert('Please fill all the fields.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit';
+            return;
         }
-    </script>
+
+        // Phone validation
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            alert('Phone number must be exactly 10 digits.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit';
+            return;
+        }
+
+        let fileObj = null;
+        if (photoInput.files.length > 0) {
+            try {
+                fileObj = await uploadFile(photoInput.files[0]);
+            } catch (e) {
+                alert('Error reading photo file.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit';
+                return;
+            }
+        } else {
+            alert('Please upload a photo.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit';
+            return;
+        }
+
+        // Prepare payload data for submission
+        const formDataObj = {
+            studentName,
+            schoolName,
+            section,
+            phone,
+            address,
+            photoData: fileObj,
+        };
+
+        try {
+            const scriptURL =
+                'https://script.google.com/macros/s/AKfycbyyBALgOKSFffzLiEFLb3X6_jwa5WjKx0F212PpQOOJEwAgJQ93rVB9E4ehJGkTIMS2/exec';
+            const response = await fetch(scriptURL, {
+                method: 'POST',
+                body: JSON.stringify(formDataObj),
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                alert(data.message || 'Data submitted successfully!');
+                // Reset form and hide preview + submit button
+                document.getElementById('studentName').value = '';
+                document.getElementById('schoolName').value = '';
+                document.getElementById('section').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('address').value = '';
+                document.getElementById('photo').value = '';
+                document.getElementById('idCard').style.display = 'none';
+                submitBtn.style.display = 'none';
+            } else {
+                alert(data.message || 'Submission failed');
+            }
+        } catch (error) {
+            alert('Submission error: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit';
+        }
+    });
+</script>
 </body>
 </html>
